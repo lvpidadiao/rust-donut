@@ -55,12 +55,40 @@ impl Canvas {
                 pixels = self.animator.as_mut().unwrap().rotate_2d(orig_set);
                 sleep(Duration::from_millis(1000 / 60));
             }
-
     }
 
-    // fn offset_pixel(&self, buf: BTreeSet<Point>) {
-    //
-    // }
+    pub fn buffer_2_screen(&self, pixel_buf: &Vec<Vec<char>>) {
+        print!("\x1b[H");
+        for y in  0 .. self.length {
+            let y = y as usize;
+            for x in 0 .. self.width {
+                let x = x as usize;
+                if pixel_buf[x][y] == '\0' {
+                    print!("  ");
+                }else {
+                    print!("{} ", ";".red());
+                }
+            }
+            println!();
+        }
+    }
+
+    pub fn buffer_2_screen_raw(&self, pixel_buf: &Vec<Vec<char>>) {
+        print!("\x1b[H");
+        for y in  0 .. self.length {
+            let y = y as usize;
+            for x in 0 .. self.width {
+                let x = x as usize;
+                if pixel_buf[x][y] == '\0' {
+                    print!("  ");
+                }else {
+                    print!("{} ", pixel_buf[x][y]);
+                }
+            }
+            println!();
+        }
+    }
+
 
 
     fn to_screen(&self, pixels: &BTreeSet<Point>) {

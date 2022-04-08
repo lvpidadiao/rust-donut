@@ -11,12 +11,13 @@ use std::time::Duration;
 use crate::canvas::Canvas;
 use crate::draw::{PlainCircle, Point};
 use crate::shapes::rectangle::Rectangle;
+use crate::shapes::sphere::Sphere;
 use crate::transform::Animation;
 
 fn main() {
 
     print!("\x1b[2J");
-    print!("\x1b[?25l");// hide terminal cursor
+    //print!("\x1b[?25l");// hide terminal cursor
 
     //let circle = PlainCircle::new(10.0, Point::origin());
     let rect = Rectangle::new(20, 20);
@@ -25,11 +26,16 @@ fn main() {
 
     let mut canvas = Canvas::new(40, 40, Some(animator));
 
-    canvas.rotate(&rect);
+    let mut sphere = Sphere::new(10.0);
 
-    print!("\x1b[?25h");
+    //sphere.plot(40, 40);
+
+    canvas.buffer_2_screen_raw(&sphere.plot(40, 40));
+    //canvas.rotate(&rect);
+
+    //print!("\x1b[?25h");
 
     //println!("there are {} points in one calculate", circle.how_many_point());
 
-    //sleep(Duration::from_secs(5));
+    sleep(Duration::from_secs(5));
 }
