@@ -10,6 +10,7 @@ use std::thread::sleep;
 use std::time::Duration;
 use crate::canvas::Canvas;
 use crate::draw::{PlainCircle, Point};
+use crate::shapes::donut::Donut;
 use crate::shapes::rectangle::Rectangle;
 use crate::shapes::sphere::Sphere;
 use crate::transform::Animation;
@@ -28,9 +29,16 @@ fn main() {
 
     let mut sphere = Sphere::new(10.0);
 
+    let torus = Donut::new(10, 3, 30, 35, 40, 40);
+
     //sphere.plot(40, 40);
 
-    canvas.buffer_2_screen_raw(&sphere.plot(40, 40));
+    //canvas.buffer_2_screen_raw(&sphere.plot(40, 40, &[-1.0, 0.0, 0.0]));
+    canvas.buffer_2_screen_raw(&torus.regulated_pixels());
+
+
+
+
     //canvas.rotate(&rect);
 
     //print!("\x1b[?25h");

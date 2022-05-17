@@ -19,7 +19,7 @@ impl Sphere {
 }
 
 
-pub fn dot_product_3d(a: [f32;3], b: [f32;3]) -> f32 {
+pub fn dot_product_3d(a: [f32;3], b: &[f32;3]) -> f32 {
     a[0] * b[0] + a[1] * b[1] + a[2] * b[2]
 }
 
@@ -37,13 +37,13 @@ impl Sphere {
         }
     }
 
-    pub fn plot(&mut self, screen_width: usize, screen_height: usize) -> Vec<Vec<char>> {
+    pub fn plot(&mut self, screen_width: usize, screen_height: usize, light_source: &[f32;3]) -> Vec<Vec<char>> {
         // depth value
         // convert it to luminance value
         // zbuf[x][y] present a point
         let r_integer = self.radius as usize + 1;
         let mut zbuf = vec![vec![-123;screen_width];screen_height];
-        let mut output = vec![vec!['\0';screen_height];screen_width];
+        let mut output = vec![vec!['\0';screen_width];screen_height];
         let two_pi = PI*2.0;
         //let resize_z_factor = 128.0 / self.radius;
 
@@ -74,10 +74,13 @@ impl Sphere {
                     // first find normal, as a sphere, surface normal is just [x, y, z]
                     // let light source as [-1, 1, 1]
                     // dot product
-                    let mut lum = dot_product_3d([cos_psi, sin_psi , cos_the], [-1.0, 1.0, 1.0]);
-                    lum += 2.1;
+                    let mut lum = dot_product_3d([cos_psi, sin_psi , cos_the], light_source);
+                    //lum += 2.1;
+                    if lum < 0.0 {
+                        continue;
+                    }
 
-                    let lum_index = (lum * 2.6) as usize;
+                    let lum_index = (lum * 11.4) as usize ;
                     //let lum_index = 7;
                     if output[xc][yc] != '\0' {
                         println!("[{},{}] has been set before. original char {}, new char {}", xc, yc,
@@ -91,7 +94,7 @@ impl Sphere {
                 }
             }
             self.psi = 0.0;
-            if self.theta.ge(&PI) {
+            if self.theta.ge(&two_pi) {
                 break;
             }
         }
@@ -106,4 +109,77 @@ impl Sphere {
     //
     // }
 
+
+
+}
+
+#[cfg(test)]
+mod tests{
+    #[test]
+    fn swap_pi() {
+        //let mut pis = vec![1,3,4,2];
+        let mut pis = vec![1,1,1,2];
+        println!("array {:?}", pis);
+
+
+        let find_max = |ps: &[i32]| {
+            let mut max_index = 0;
+            for i in 0..ps.len() {
+                if ps[i] > ps[max_index] {
+                    max_index = i;
+                }
+            }
+            return max_index;
+        };
+
+        let revert_pi = |ps : &mut [i32], i:usize| {
+            let last = ps.len() - 1;
+            let temp = ps[i];
+            ps[i] = ps[last];
+            ps[last] = ps[0];
+            ps[0] = temp;
+        };
+
+
+        for i in 0..pis.len() {
+            let max_index = find_max(&pis[i..]);
+            if max_index == i {
+                continue;
+            }
+
+            revert_pi(&mut pis[i..], max_index);
+        }
+
+        println!("array {:?}", pis);
+    }
+
+    #[test]
+    fn sel() {
+        let mut to_sort = vec![9,3,1,4,2];
+
+        println!("to sort {:?}", &to_sort);
+
+        let find_max = |ps: &[i32]| {
+            let mut max_index = 0;
+            for i in 0..ps.len() {
+                if ps[i] > ps[max_index] {
+                    max_index = i;
+                }
+            }
+            return max_index;
+        };
+
+        for i in 0..to_sort.len() {
+            let max_index = find_max(&to_sort[i..]);
+            if max_index == 0 {
+                continue;
+            }
+            let temp = to_sort[i];
+            to_sort[i] = to_sort[max_index + i];
+            to_sort[max_index + i] = temp;
+        }
+
+        println!("to sort {:?}", &to_sort);
+
+    }
 }
