@@ -74,10 +74,9 @@ impl Donut {
     }
 
 
-
-    // rotate along with y-axis
-    // [-4*sin(delta)*sin(the) + 4*cos(delta)*cos(psi)*cos(the) + 10*cos(delta)*cos(psi), -4*sin(psi)*cos(the) - 10*sin(psi), 4*sin(delta)*cos(psi)*cos(the) + 10*sin(delta)*cos(psi) + 4*sin(the)*cos(delta)]
-    pub fn next_frame(&self) -> Vec<Vec<char>> {
+    // torus rotate along with y-axis counter-clockwise
+    // [-r2*sin(delta)*sin(the) + r2*cos(delta)*cos(psi)*cos(the) + r1*cos(delta)*cos(psi), -r2*sin(psi)*cos(the) - r1*sin(psi), r2*sin(delta)*cos(psi)*cos(the) + r1*sin(delta)*cos(psi) + r2*sin(the)*cos(delta)]
+    pub fn next_frame(&mut self) -> Vec<Vec<char>> {
         let mut zbuf = vec![vec![-123;self.scr_height];self.scr_width];
         let mut output = vec![vec!['\0';self.scr_height];self.scr_width];
         let mut psi = 0.0f32;
@@ -88,19 +87,21 @@ impl Donut {
         let wid_offset = (self.scr_width / 2) as f32;
         let hei_offset = (self.scr_height / 2) as f32;
 
+        self.delta += 0.17;
+        let (sin_d, cos_d) = self.delta.sin_cos();
+
         loop {
             psi += 0.05;
-            let (sin_p, cos_p) = psi.sin_cos();
-            let z = (self.r2 as f32 * sin_p) as i32;
-            let z_apo = self.viewer_distance as f32 / (self.object_distance as f32 - z as f32);
-
             loop {
                 theta += 0.05;
-
                 let (sin_t, cos_t) = theta.sin_cos();
+                let (sin_p, cos_p) = psi.sin_cos();
+                let z = (self.r2 as f32 * sin_d * cos_p * cos_t + self.r1 as f32 * sin_d * cos_p + self.r2 as f32 * sin_t * cos_d) as i32;
+                let z_apo = self.viewer_distance as f32 / (self.object_distance as f32 - z as f32);
 
-                let x = self.r2 as f32 * cos_t * cos_p + self.r1 as f32 * cos_t;
-                let y = -1.0 * self.r2 as f32 * sin_t * cos_p - self.r1 as f32 * sin_t;
+
+                let x = -1.0 * self.r2 as f32 * sin_d * sin_t + self.r2 as f32 * cos_t * cos_p * cos_d + self.r1 as f32 * cos_d * cos_p;
+                let y = -1.0 * self.r2 as f32 * sin_p * cos_t - self.r1 as f32 * sin_p;
                 let xp = (x * z_apo + wid_offset) as usize;
                 let yp = (y * z_apo + hei_offset) as usize;
 

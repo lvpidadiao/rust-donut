@@ -29,14 +29,18 @@ fn main() {
 
     let mut sphere = Sphere::new(10.0);
 
-    let torus = Donut::new(10, 3, 30, 35, 40, 40);
+    let mut torus = Donut::new(10, 3, 30, 35, 40, 40);
 
     //sphere.plot(40, 40);
 
     //canvas.buffer_2_screen_raw(&sphere.plot(40, 40, &[-1.0, 0.0, 0.0]));
-    canvas.buffer_2_screen_raw(&torus.regulated_pixels());
+    //canvas.buffer_2_screen_raw(&torus.regulated_pixels());
+    let sleep_duration = 1000 / 24;
 
-
+    loop {
+        canvas.buffer_2_screen_raw(&torus.next_frame());
+        sleep(Duration::from_millis(sleep_duration));
+    }
 
 
     //canvas.rotate(&rect);
