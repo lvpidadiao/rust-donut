@@ -2,7 +2,7 @@ use std::f32::consts::PI;
 use std::mem::size_of;
 use std::ops::Rem;
 
-static luminance_chars: [char; 12] = ['.', ',', '-','~',':', ';', '=', '!', '*', '#', '$', '@'];
+static LUMINANCE_CHARS: [char; 12] = ['.', ',', '-','~',':', ';', '=', '!', '*', '#', '$', '@'];
 
 
 pub struct Sphere {
@@ -84,9 +84,9 @@ impl Sphere {
                     //let lum_index = 7;
                     if output[xc][yc] != '\0' {
                         println!("[{},{}] has been set before. original char {}, new char {}", xc, yc,
-                        output[xc][yc], luminance_chars[lum_index]);
+                                 output[xc][yc], LUMINANCE_CHARS[lum_index]);
                     }
-                    output[xc][yc] = luminance_chars[lum_index];
+                    output[xc][yc] = LUMINANCE_CHARS[lum_index];
                 }
 
                 if self.psi.ge(&two_pi) {
