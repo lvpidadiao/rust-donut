@@ -1,4 +1,5 @@
 use std::f32::consts::PI;
+use crate::shapes::sphere::{dot_product_3d, LUMINANCE_CHARS};
 
 
 static RESO:f32 = 0.05;
@@ -15,6 +16,7 @@ pub struct Donut {
     delta: f32,
     a_radian: f32,
     b_radian: f32,
+    light_source: [f32;3]
 }
 
 
@@ -31,6 +33,7 @@ impl Donut {
             delta: 0.0,
             a_radian: 0.0,
             b_radian: 0.0,
+            light_source: [-1.0, -1.0, 1.0],
         }
     }
 
@@ -135,6 +138,12 @@ impl Donut {
     // y = ((4*cos(the) + 10)*sin(delta)*cos(psi) + 4*sin(the)*cos(delta))*sin(a) - (4*cos(the) + 10)*sin(psi)*cos(a)
     // z = ((4*cos(the) + 10)*sin(delta)*cos(psi) + 4*sin(the)*cos(delta))*cos(a) + (4*cos(the) + 10)*sin(a)*sin(psi)
     //
+
+
+    // torus normal is
+    // -sin(delta)*sin(the) + cos(delta)*cos(psi)*cos(the),
+    // (sin(delta)*cos(psi)*cos(the) + sin(the)*cos(delta))*sin(a) - sin(psi)*cos(a)*cos(the)
+    // (sin(delta)*cos(psi)*cos(the) + sin(the)*cos(delta))*cos(a) + sin(a)*sin(psi)*cos(the)
     pub fn next_frame_with_x_rotate(&mut self) -> Vec<Vec<char>> {
         let mut zbuf = vec![vec![-123;self.scr_height];self.scr_width];
         let mut output = vec![vec!['\0';self.scr_height];self.scr_width];
@@ -172,7 +181,18 @@ impl Donut {
 
                 if z as i32 > zbuf[xp][yp]  {
                     zbuf[xp][yp] = z as i32;
-                    output[xp][yp] = '*';
+                    let normal = [-1.0 * sin_d * sin_t + cos_d * cos_p * cos_t,
+                        (sin_d * cos_p * cos_t + sin_t * cos_d) * sin_a - sin_p * cos_a * cos_t,
+                        (sin_d * cos_p * cos_t + sin_t * cos_d) * cos_a + sin_a * sin_p * cos_t];
+
+                    let lumi =  dot_product_3d(normal, &self.light_source);
+
+                    if lumi < 0.0 {
+                        continue;
+                    }
+                    //
+                    let lumi_index = (lumi * 6.5) as usize;
+                    output[xp][yp] = LUMINANCE_CHARS[lumi_index];
                 }
 
                 if theta.ge(&two_pi) {

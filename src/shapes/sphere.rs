@@ -2,7 +2,7 @@ use std::f32::consts::PI;
 use std::mem::size_of;
 use std::ops::Rem;
 
-static LUMINANCE_CHARS: [char; 12] = ['.', ',', '-','~',':', ';', '=', '!', '*', '#', '$', '@'];
+pub static LUMINANCE_CHARS: [char; 12] = ['.', ',', '-','~',':', ';', '=', '!', '*', '#', '$', '@'];
 
 
 pub struct Sphere {

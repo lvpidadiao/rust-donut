@@ -29,7 +29,7 @@ fn main() {
 
     let mut sphere = Sphere::new(10.0);
 
-    let mut torus = Donut::new(10, 3, 30, 35, 40, 40);
+    let mut torus = Donut::new(10, 6, 30, 35, 50, 50);
 
     //sphere.plot(40, 40);
 
@@ -37,6 +37,8 @@ fn main() {
     //canvas.buffer_2_screen_raw(&torus.regulated_pixels());
     let sleep_duration = 1000 / 30;
     let start_ts = Instant::now();
+
+
 
     loop {
         canvas.buffer_2_screen_raw(&torus.next_frame_with_x_rotate());
